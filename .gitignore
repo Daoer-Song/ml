@@ -1,11 +1,3 @@
 /Kmeans/kmeans
 /Kmeans/K-Means/kmeans
-svm/svm-digits.py
-svm/svm-simple.py
-svm/svm-smo.py
-svm/svm-svc.py
-svm/svmMLiA.py
-svm/testSet.txt
-svm/testSetRBF.txt
-svm/testSetRBF2.txt
-svm/svm-daoer.py
+/svm/*
