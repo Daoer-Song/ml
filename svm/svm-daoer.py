@@ -45,4 +45,3 @@ def smoSimple(dataMatiIn, classLabels, C, toler, maxIter):
 if __name__ == '__main__':
     dataMat, labelMat = loadDataSet('./svm/testSe.txt')
     b,alphas = smoSimple(dataMat, labelMat, 0.6, 0.001, 40)
-
