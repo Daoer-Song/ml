@@ -11,6 +11,7 @@ import csv
 
 def prepare_data():
     global mean_x, std_x
+    global x, y
     #1.数据预处理 data preprocessing
     data = pd.read_csv('./NTU-ML/hw1/train.csv', encoding='big5')
     data = data.iloc[:, 3:]
@@ -49,6 +50,7 @@ def prepare_data():
 
 def train():
     #4.划分训练数据为训练集和验证集 split training data into 'training set' and 'validation set'
+    global x, y
     x_train_set = x[:math.floor(len(x)*0.8), :]
     y_train_set = y[:math.floor(len(x)*0.8), :]
     x_validation_set = x[math.floor(len(x)*0.8):, :]
@@ -60,7 +62,7 @@ def train():
     dim = 18 * 9 + 1
     w = np.zeros([dim,1])
     x = np.concatenate((np.ones([len(x), 1]), x), axis=1).astype(float)
-    learning_rate = 100
+    learning_rate = 10
     iter_time = 1000001
     adagrad = np.zeros([dim, 1])
     eps = 0.0000000001
@@ -103,19 +105,20 @@ def predict():
         for i in range(240):
             row = ['id_'+str(i), ans_y[i][0]]
             csv_writer.writerow(row)
+    print('inference of prediction is over!')
 
 
 if __name__ == '__main__':
     # print(sys.argv)
-    if sys.argv[1] == 'train':
-        prepare_data()
-        train()
-    elif sys.argv[1] == 'predict':
-        if os.path.exists('./NTU-ML/hw1/weight_and_bias.npy'):
+    try:
+        if sys.argv[1] == 'train':
             prepare_data()
-            predict()
-        else:
-            print('Do not exsit weight file, please check file path: ./NTU-ML/hw1/weight_and_bias.npy')
-
-    else:
-        print('Missing a parameter, The command line format is like, python regression.py train/predict.')
+            train()
+        elif sys.argv[1] == 'predict':
+            if os.path.exists('./NTU-ML/hw1/weight_and_bias.npy'):
+                prepare_data()
+                predict()
+            else:
+                print('Do not exsit weight file, please check file path: ./NTU-ML/hw1/weight_and_bias.npy')
+    except IndexError:
+        print('Tips via Daoer: Missing a parameter, The command line format is like, python regression.py train/predict.')
