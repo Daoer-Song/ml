@@ -9,6 +9,9 @@ import numpy as np
 import math
 import csv
 
+#超参数 hyper-parameter
+lamb = 10
+
 def prepare_data():
     global mean_x, std_x
     global x, y
@@ -59,16 +62,18 @@ def train():
     print('the length of x_train, y_train, x_valid, y_valid is: ', str(len(x_train_set)), str(len(y_train_set)), str(len(x_validation_set)), str(len(y_validation_set)))
 
     #5.训练，线性回归算法的实现 training, implement linear regression
-    dim = 18 * 9 + 1
+    dim = 18 * 9 * 2 + 1
     w = np.zeros([dim,1])
+    x_sq = x**2
+    x = np.concatenate((x, x_sq), axis=1).astype(float)
     x = np.concatenate((np.ones([len(x), 1]), x), axis=1).astype(float)
-    learning_rate = 10
+    learning_rate = 1000
     iter_time = 1000001
     adagrad = np.zeros([dim, 1])
     eps = 0.0000000001
     for i in range(iter_time):
         y_predict = np.dot(x, w)
-        loss = np.sqrt(np.sum(np.power(y_predict-y, 2))/len(x))
+        loss = np.sqrt(np.sum(np.power(y_predict-y, 2))/len(x)) #+ lamb * np.sum(np.power(w[int((dim-1)/2)+1:], 2))
         if(i%500==0):
             print(str(i) + ': ' + str(loss))
         gradient = 2*np.dot(x.transpose(), y_predict-y)
@@ -93,6 +98,8 @@ def predict():
             if std_x[j] != 0:
                 test_x[i][j] = (test_x[i][j] - mean_x[j])/std_x[j]
     #给测试数据加上偏置项
+    test_x_sq = test_x**2
+    test_x = np.concatenate((test_x, test_x_sq), axis=1).astype(float)
     test_x = np.concatenate((np.ones([240,1]), test_x), axis=1).astype(float)
 
     #7.预测与结果保存 prediction and saving result
