@@ -7,17 +7,17 @@ import math
 
 @cuda.jit
 def process_gpu(img, rows, cols, channels):
-    tx = cuda.blocksIdx * cuda.blocksDim.x + cuda.threadIdx.x
-    ty = cuda.blocksIdy * cuda.blocksDim.y + cuda.threadIdx.y
+    tx = cuda.blockIdx.x * cuda.blockDim.x + cuda.threadIdx.x
+    ty = cuda.blockIdx.y * cuda.blockDim.y + cuda.threadIdx.y
     if tx < cols and ty < rows:
         for c in range(channels):
-            color = img[i,j][c]*2.0 + 30
+            color = img[tx,ty][c]*1.4 + 30
             if color > 255:
-                img[i,j][c] = 255
+                img[tx,ty][c] = 255
             elif color < 0:
-                img[i,j][c] = 0
+                img[tx,ty][c] = 0
             else:
-                img[i,j][c] = color
+                img[tx,ty][c] = color
 
 
 def process_cpu(img):
@@ -25,7 +25,7 @@ def process_cpu(img):
     for i in range(rows):
         for j in range(cols):
             for c in range(channels):
-                color = img[i,j][c]*2.0 + 30
+                color = img[i,j][c]*1.4 + 30
                 if color > 255:
                     img[i,j][c] = 255
                 elif color < 0:
@@ -40,7 +40,7 @@ def process_cpu_numba(img):
     for i in range(rows):
         for j in range(cols):
             for c in range(channels):
-                color = img[i,j][c]*2.0 + 30
+                color = img[i,j][c]*1.4 + 30
                 if color > 255:
                     img[i,j][c] = 255
                 elif color < 0:
@@ -63,12 +63,12 @@ if __name__ == '__main__':
     start_cpu = time.time()
     process_cpu(img)
     end_cpu = time.time()
-    print('Cpu process time: '+str(end_cpu-start_cpu))
+    print('Cpu process time: '+str(end_cpu-start_cpu)+' s.')
 
     start_cpu = time.time()
     process_cpu_numba(img)
     end_cpu = time.time()
-    print('Cpu numba process time: '+str(end_cpu-start_cpu))
+    print('Cpu numba process time: '+str(end_cpu-start_cpu)+' s.')
 
     threadsperblock = (32,32)
     blockspergrid_x = int(math.ceil(cols/threadsperblock[0]))
@@ -79,5 +79,5 @@ if __name__ == '__main__':
     start_gpu = time.time()
     process_gpu[blockspergrid, threadsperblock](dImg, rows, cols, channels)
     cuda.synchronize()
-    end_gpu = tiem.time()
-    print('Gpu process time: '+str(end_gpu-start_gpu))
+    end_gpu = time.time()
+    print('Gpu process time: '+str(end_gpu-start_gpu)+' s.')

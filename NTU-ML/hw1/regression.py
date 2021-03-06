@@ -10,7 +10,7 @@ import math
 import csv
 
 #超参数 hyper-parameter
-lamb = 10
+lamb = 1000
 
 def prepare_data():
     global mean_x, std_x
@@ -68,18 +68,19 @@ def train():
     x = np.concatenate((x, x_sq), axis=1).astype(float)
     x = np.concatenate((np.ones([len(x), 1]), x), axis=1).astype(float)
     learning_rate = 1000
-    iter_time = 1000001
+    iter_time = 150001
     adagrad = np.zeros([dim, 1])
     eps = 0.0000000001
     for i in range(iter_time):
         y_predict = np.dot(x, w)
-        loss = np.sqrt(np.sum(np.power(y_predict-y, 2))/len(x)) #+ lamb * np.sum(np.power(w[int((dim-1)/2)+1:], 2))
+        loss = np.sqrt(np.sum(np.power(y_predict-y, 2))/len(x)) + lamb * np.sum(np.power(w[int((dim-1)/2)+1:], 2))
         if(i%500==0):
             print(str(i) + ': ' + str(loss))
         gradient = 2*np.dot(x.transpose(), y_predict-y)
         adagrad += gradient**2
         w -= learning_rate * gradient / np.sqrt(adagrad + eps)
-    np.save('weight_and_bias.npy', w)
+    np.save('./NTU-ML/hw1/weight_and_bias.npy', w)
+    print('saving weight file!')
 
 def predict():
     #6.准备测试数据 preparing testing data
